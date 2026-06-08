@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Managerial Finance &middot; FIRE 371 &middot; Homework 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,900&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --stone:#928E85;
+  --stone-deep:#6B6760;
+  --stone-dark:#494640;
+  --stone-warm:#A9A59B;
+  --accent:#4F7C82;      /* teal-slate accent for contrast */
+  --accent-deep:#356065;
+  --gold:#B8924E;
+  --cream:#F4F3F0;
+  --cream-soft:#E6E4DE;
+  --paper:#FBFAF8;
+  --ink:#2B2925;
+  --ink-soft:#615D55;
+  --line:#DCD9D1;
+  --code-bg:#2B2925;
+  --code-fg:#EDEBE5;
+  --up:#3E8E5E;          /* positive cash flow / profit */
+  --down:#C0552F;        /* negative / outflow */
+  --ok:#2E7D4F;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;}
+body{font-family:'Outfit',sans-serif;background:var(--stone);color:var(--ink);overflow:hidden;}
+#deck{position:fixed;inset:0;}
+.slide{
+  position:absolute;inset:0;display:flex;flex-direction:column;padding:3.8rem 5.2rem 4.8rem;
+  background:radial-gradient(135% 135% at 0% 0%, var(--cream) 0%, var(--paper) 50%), var(--paper);
+  opacity:0;visibility:hidden;transform:translateY(22px) scale(.993);
+  transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1),visibility 0s linear .5s;overflow:hidden;
+}
+.slide.active{opacity:1;visibility:visible;transform:none;transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1),visibility 0s;}
+.slide.active .reveal{animation:rise .65s cubic-bezier(.16,1,.3,1) backwards;}
+.slide.active .reveal:nth-child(1){animation-delay:.05s}
+.slide.active .reveal:nth-child(2){animation-delay:.12s}
+.slide.active .reveal:nth-child(3){animation-delay:.19s}
+.slide.active .reveal:nth-child(4){animation-delay:.26s}
+.slide.active .reveal:nth-child(5){animation-delay:.33s}
+.slide.active .reveal:nth-child(6){animation-delay:.40s}
+@keyframes rise{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:none}}
+.slide::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;mix-blend-mode:multiply;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.02'/%3E%3C/svg%3E");}
+
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--stone-deep);font-weight:500;margin-bottom:.9rem;}
+h1{font-family:'Fraunces',serif;font-weight:900;line-height:1.0;letter-spacing:-.02em;color:var(--ink);}
+h2{font-family:'Fraunces',serif;font-weight:600;font-size:2.4rem;line-height:1.07;letter-spacing:-.012em;margin-bottom:1.2rem;color:var(--ink);}
+h3{font-family:'Outfit',sans-serif;font-weight:600;font-size:1.04rem;color:var(--stone-deep);margin-bottom:.5rem;}
+p{font-size:1.02rem;line-height:1.58;color:var(--ink-soft);}
+strong{color:var(--ink);font-weight:600;}
+.slide-head{flex:0 0 auto;margin-bottom:1.4rem;}
+.slide-body{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;}
+
+footer{position:absolute;left:5.2rem;right:5.2rem;bottom:1.6rem;display:flex;align-items:center;gap:1.3rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--ink-soft);}
+.progress{flex:1 1 auto;height:3px;background:var(--cream-soft);border-radius:99px;overflow:hidden;}
+.progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--stone-warm),var(--stone-deep));transition:width .5s cubic-bezier(.16,1,.3,1);}
+.dots{display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;max-width:44%;}
+.dot{width:7px;height:7px;border-radius:99px;background:var(--cream-soft);cursor:pointer;transition:.3s;border:none;padding:0;}
+.dot:hover{transform:scale(1.4);background:var(--stone-warm);}
+.dot.on{background:var(--stone-deep);width:18px;}
+.counter{letter-spacing:.18em;color:var(--stone-deep);font-weight:500;white-space:nowrap;}
+.arrow{position:fixed;bottom:1.2rem;z-index:40;width:40px;height:40px;border-radius:99px;border:1.5px solid var(--line);background:var(--paper);color:var(--stone-deep);cursor:pointer;font-size:1.05rem;display:grid;place-items:center;transition:.25s;}
+.arrow:hover{background:var(--stone-deep);color:#fff;border-color:var(--stone-deep);transform:translateY(-2px);}
+.arrow.prev{right:5.6rem}.arrow.next{right:3rem}
+.arrow:disabled{opacity:.3;cursor:default;transform:none;background:var(--paper);color:var(--stone-deep);}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2.2rem;align-items:start;}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem;align-items:start;}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;align-items:start;}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:1.4rem 1.5rem;box-shadow:0 1px 0 rgba(73,70,64,.05),0 16px 38px -26px rgba(73,70,64,.4);}
+.card.tint{background:var(--cream);border-color:var(--cream-soft);}
+.card.accent{background:#E8F0F1;border-color:#C4DCDE;}.card.accent h3{color:#2B5256;}
+.card.gold{background:#F6EFDE;border-color:#E8D7B2;}.card.gold h3{color:#8A6A28;}
+.card.up{background:#EAF5EE;border-color:#C3E2CE;}.card.up h3{color:#256B43;}
+.card.down{background:#FAEBE3;border-color:#EFCFBE;}.card.down h3{color:#9E4324;}
+.card h3{margin-bottom:.6rem;}
+.card p{font-size:.95rem;}
+.card ul{list-style:none;margin-top:.4rem;}
+.card li{font-size:.93rem;line-height:1.5;color:var(--ink-soft);padding-left:1.25rem;position:relative;margin-bottom:.45rem;}
+.card li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;border-radius:2px;background:var(--stone-warm);transform:rotate(45deg);}
+.card.accent li::before{background:var(--accent);}
+.stat-row{display:flex;gap:2.4rem;margin:.4rem 0 .2rem;flex-wrap:wrap;}
+.stat{display:flex;flex-direction:column;}
+.stat b{font-family:'Fraunces',serif;font-weight:900;font-size:2.6rem;line-height:1;color:var(--stone-deep);}
+.stat span{font-size:.8rem;color:var(--ink-soft);margin-top:.3rem;max-width:16ch;}
+.pill{display:inline-flex;align-items:center;gap:.4rem;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;padding:.32rem .68rem;border-radius:99px;background:var(--cream-soft);color:var(--stone-deep);font-weight:500;}
+.pill.accent{background:rgba(79,124,130,.16);color:#2B5256;}
+.pill.up{background:rgba(62,142,94,.16);color:#256B43;}
+.pill.down{background:rgba(192,85,47,.16);color:#9E4324;}
+.lead{font-size:1.2rem;line-height:1.55;color:var(--ink);max-width:62ch;}
+ul.clean{list-style:none;}
+ul.clean li{font-size:1rem;line-height:1.5;color:var(--ink-soft);padding-left:1.4rem;position:relative;margin-bottom:.6rem;}
+ul.clean li::before{content:"";position:absolute;left:0;top:.58em;width:7px;height:7px;border-radius:2px;background:var(--stone-warm);transform:rotate(45deg);}
+.note{font-size:.8rem;color:var(--ink-soft);font-style:italic;margin-top:.5rem;}
+.kbd{font-family:'JetBrains Mono',monospace;font-size:.84rem;background:var(--cream);border:1px solid var(--cream-soft);border-radius:6px;padding:.06rem .38rem;color:var(--stone-deep);}
+.quote{border-left:4px solid var(--stone-warm);background:var(--cream);border-radius:0 12px 12px 0;padding:.9rem 1.3rem;font-style:italic;color:var(--ink);font-size:1rem;line-height:1.55;}
+.formula{font-family:'JetBrains Mono',monospace;font-size:.86rem;color:var(--ink);background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:0 12px 12px 0;padding:.85rem 1.3rem;line-height:1.7;}
+
+.demo{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+.demo-head{display:flex;align-items:center;gap:.7rem;padding:.6rem 1rem;background:var(--cream);border-bottom:1px solid var(--line);}
+.demo-head .dotrow{display:flex;gap:.4rem;}
+.demo-head .dotrow i{width:11px;height:11px;border-radius:99px;display:block;}
+.demo-head .fname{font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--ink-soft);}
+.run-btn{font-family:'JetBrains Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.04em;border:none;background:var(--stone-deep);color:#fff;padding:.42rem .9rem;border-radius:8px;cursor:pointer;transition:.2s;}
+.run-btn:hover{background:var(--accent);transform:translateY(-1px);}
+.code{font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.5;background:var(--code-bg);color:var(--code-fg);padding:1rem 1.2rem;overflow:auto;white-space:pre;flex:1 1 auto;min-height:0;}
+.code .c{color:#999488;font-style:italic;}.code .k{color:#9FD4DA;}.code .s{color:#A7D7B0;}.code .n{color:#E8C98A;}.code .f{color:#C9B6D9;}
+.out{font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:1.5;background:#23211d;color:#EDEBE5;border-top:1px solid #45413a;padding:.85rem 1.2rem;max-height:170px;overflow:auto;white-space:pre-wrap;}
+.out .ok{color:#7FCF9C;}.out .muted{color:#999488;}.out .hl{color:#E8C98A;font-weight:700;}
+.out .up{color:#7FCF9C;}.out .down{color:#E8916A;}
+canvas.plot{background:#fff;border-radius:8px;max-width:100%;touch-action:none;}
+
+.table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:.45rem;}
+.table th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--stone-deep);padding:.5rem .7rem;border-bottom:2px solid var(--cream-soft);}
+.table td{padding:.46rem .7rem;border-bottom:1px solid var(--line);color:var(--ink-soft);}
+.table tr:last-child td{border-bottom:none;}
+.table td.mono{font-family:'JetBrains Mono',monospace;font-size:.85rem;color:var(--ink);}
+
+.title-slide{justify-content:center;}
+.title-slide h1{font-size:4.6rem;}
+.title-slide .meta{margin-top:2rem;display:flex;gap:2.2rem;flex-wrap:wrap;}
+.title-slide .meta div{display:flex;flex-direction:column;gap:.2rem;}
+.title-slide .meta .lab{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--stone-deep);}
+.title-slide .meta .val{font-size:1rem;color:var(--ink);font-weight:500;}
+.title-deco{position:absolute;right:4.5rem;top:50%;transform:translateY(-50%);width:320px;height:300px;opacity:.95;}
+
+@media (max-width:1100px){.slide{padding:2.8rem 2.6rem 4.4rem;}footer{left:2.6rem;right:2.6rem;}.title-slide h1{font-size:3rem;}.title-deco{display:none;}}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<section class="slide title-slide">
+  <div class="slide-body">
+    <div class="eyebrow reveal">FIRE 371 &middot; Managerial Finance &middot; Fall 2022</div>
+    <h1 class="reveal">Managerial<br>Finance</h1>
+    <p class="lead reveal" style="margin-top:1.4rem;">Homework 1 and the first three chapters &mdash; the goal of the firm, reading financial statements and cash flow, and the ratios that diagnose performance. With a cash-flow and ratio analyzer you can run right on the slides.</p>
+    <div class="meta reveal">
+      <div><span class="lab">Student</span><span class="val">Naomie Bambara</span></div>
+      <div><span class="lab">Course</span><span class="val">FIRE 371 &middot; Fall 2022</span></div>
+      <div><span class="lab">Coverage</span><span class="val">Homework 1 &middot; Chapters 1&ndash;3</span></div>
+      <div><span class="lab">Text</span><span class="val">Ross, Westerfield &amp; Jordan</span></div>
+    </div>
+  </div>
+  <svg class="title-deco reveal" viewBox="0 0 220 200" fill="none">
+    <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A9A59B"/><stop offset="1" stop-color="#6B6760"/></linearGradient></defs>
+    <!-- cash-flow waterfall motif -->
+    <line x1="24" y1="170" x2="200" y2="170" stroke="#CFCBC2" stroke-width="1.5"/>
+    <rect x="34" y="60" width="26" height="110" rx="3" fill="url(#g1)"/>
+    <rect x="72" y="90" width="26" height="80" rx="3" fill="#4F7C82" opacity=".75"/>
+    <rect x="110" y="74" width="26" height="96" rx="3" fill="url(#g1)"/>
+    <rect x="148" y="108" width="26" height="62" rx="3" fill="#4F7C82" opacity=".75"/>
+    <text x="47" y="54" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#6B6760">OCF</text>
+    <text x="85" y="84" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#356065">NWC</text>
+    <text x="123" y="68" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#6B6760">NCS</text>
+    <text x="161" y="102" text-anchor="middle" font-family="JetBrains Mono" font-size="7" fill="#356065">CFA</text>
+    <text x="100" y="192" text-anchor="middle" font-family="JetBrains Mono" font-size="8" fill="#615D55" letter-spacing="1.5">cash flow from assets</text>
+  </svg>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 1 &middot; the big picture</div>
+    <h2 class="reveal">Three questions every firm must answer</h2>
+  </div>
+  <div class="slide-body">
+    <div class="three-col reveal">
+      <div class="card accent">
+        <h3>Capital budgeting</h3>
+        <p>What long-term <strong>investments</strong> or projects should the business take on? The process of planning and managing long-term assets.</p>
+      </div>
+      <div class="card accent">
+        <h3>Capital structure</h3>
+        <p>How should we <strong>pay</strong> for those assets? The mix of debt and equity used to finance the firm.</p>
+      </div>
+      <div class="card accent">
+        <h3>Working capital</h3>
+        <p>How do we manage <strong>day-to-day</strong> finances &mdash; the short-term assets and liabilities that keep operations running?</p>
+      </div>
+    </div>
+    <div class="card tint reveal" style="margin-top:1.4rem;">
+      <h3>The financial manager's domain</h3>
+      <p style="font-size:.96rem;">These three decisions &mdash; from Caleb wondering how to fund more juice stands to any CFO's daily work &mdash; are the whole of corporate finance. The first three chapters build the vocabulary and tools to answer them.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 1 &middot; the goal &amp; the structure</div>
+    <h2 class="reveal">What is the firm trying to do?</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <h3>The goal of financial management</h3>
+        <div class="card accent">
+          <p style="font-size:.96rem;">To <strong>maximize the current value per share</strong> of existing stock &mdash; the owners' wealth. Not simply to maximize profit (which ignores timing and risk), but to maximize value.</p>
+        </div>
+        <p class="note" style="margin-top:.5rem;">Value accounts for the size, timing, and risk of future cash flows &mdash; the recurring theme of the whole course.</p>
+      </div>
+      <div class="reveal">
+        <h3>Three forms of business</h3>
+        <div class="card tint">
+          <ul>
+            <li><strong>Sole proprietorship</strong> &mdash; simple, but unlimited liability and limited life</li>
+            <li><strong>Partnership</strong> &mdash; shared, still unlimited liability (for general partners)</li>
+            <li><strong>Corporation</strong> &mdash; limited liability, easy to raise capital, but double taxation and separation of ownership and control</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 1 &middot; Homework Exercise 1.12</div>
+    <h2 class="reveal">The agency problem</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <p>When ownership and control are separated, managers (agents) may not always act in the owners' (principals') best interest. This is the <strong>agency problem</strong>, and it carries <strong>agency costs</strong>.</p>
+        <div class="quote" style="margin-top:.9rem;">Your homework's takeaway: if a manager believes the company is worth <em>more</em> than a $35-per-share buyout offer, acting for shareholders means pushing for a better bid &mdash; not accepting the low offer.</div>
+      </div>
+      <div class="reveal">
+        <div class="card tint">
+          <h3>Aligning incentives</h3>
+          <ul>
+            <li><strong>Compensation</strong> tied to performance and share price (stock options)</li>
+            <li>The threat of <strong>takeovers</strong> disciplines underperforming managers</li>
+            <li><strong>Monitoring</strong> by boards and large shareholders</li>
+          </ul>
+          <p class="note">Markets and contracts exist to keep managers working for owners &mdash; and to reassure investors like Mary after Enron and WorldCom.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 2 &middot; the two core statements</div>
+    <h2 class="reveal">Balance sheet &amp; income statement</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="card accent">
+          <h3>Balance sheet</h3>
+          <p style="font-size:.95rem;">A <strong>snapshot</strong> of the firm at a point in time. Assets listed in order of <strong>liquidity</strong>. The identity always holds:</p>
+          <div class="formula" style="margin:.6rem 0;">Assets = Liabilities + Shareholders' Equity</div>
+          <p style="font-size:.93rem;"><strong>Net working capital</strong> = Current Assets &minus; Current Liabilities &mdash; usually positive in a healthy firm.</p>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="card accent">
+          <h3>Income statement</h3>
+          <p style="font-size:.95rem;">Performance over a <strong>period</strong> of time. Works down from revenue to the bottom line:</p>
+          <div class="formula" style="margin:.6rem 0;font-size:.78rem;">Sales &minus; Costs &minus; Depreciation = EBIT<br>EBIT &minus; Interest = Taxable income<br>&minus; Taxes = Net income</div>
+          <p style="font-size:.93rem;">Watch for <strong>non-cash</strong> items (depreciation) and the difference between average and marginal tax rates.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 2 &middot; Homework Problem 5</div>
+    <h2 class="reveal">Marginal vs. average tax rates</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <p>The US uses a <strong>progressive</strong> tax system &mdash; income is taxed in brackets. Duela Dent, single with <strong>$189,000</strong> taxable income, pays:</p>
+        <table class="table">
+          <tr><th>Bracket</th><th>Rate</th><th>Tax</th></tr>
+          <tr><td class="mono">to 9,525</td><td class="mono">10%</td><td class="mono">952.50</td></tr>
+          <tr><td class="mono">to 38,700</td><td class="mono">12%</td><td class="mono">3,501.00</td></tr>
+          <tr><td class="mono">to 82,500</td><td class="mono">22%</td><td class="mono">9,636.00</td></tr>
+          <tr><td class="mono">to 157,500</td><td class="mono">24%</td><td class="mono">18,000.00</td></tr>
+          <tr><td class="mono">to 189,000</td><td class="mono">32%</td><td class="mono">10,080.00</td></tr>
+        </table>
+      </div>
+      <div class="reveal">
+        <div class="card gold">
+          <h3>The two rates</h3>
+          <div class="formula" style="margin:.4rem 0;">Total tax = <strong>$42,169.50</strong></div>
+          <ul style="margin-top:.6rem;">
+            <li><strong>Marginal rate = 32%</strong> &mdash; the rate on the <em>next</em> dollar; what you use for project decisions</li>
+            <li><strong>Average rate = 22.31%</strong> &mdash; total tax &divide; taxable income</li>
+          </ul>
+          <p class="note">For any new project's cash flows, the <strong>marginal</strong> rate is the one that matters. &check; verified.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 2 &middot; the central identity</div>
+    <h2 class="reveal">Cash flow from assets</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <p>The most important idea in Chapter 2: the cash a firm generates from its assets must equal the cash it pays out to those who financed it.</p>
+        <div class="formula" style="margin:.8rem 0;">CF from Assets = CF to Creditors + CF to Stockholders</div>
+        <p style="font-size:.94rem;">And cash flow from assets is built from three pieces:</p>
+        <div class="formula" style="margin:.6rem 0;font-size:.8rem;">CFA = OCF &minus; Net Capital Spending &minus; &Delta;NWC</div>
+      </div>
+      <div class="reveal">
+        <div class="card tint">
+          <h3>The component formulas</h3>
+          <ul style="font-size:.9rem;">
+            <li><strong>OCF</strong> = EBIT + Depreciation &minus; Taxes</li>
+            <li><strong>NCS</strong> = ending net fixed assets &minus; beginning + depreciation</li>
+            <li><strong>&Delta;NWC</strong> = ending NWC &minus; beginning NWC</li>
+            <li><strong>CF to creditors</strong> = interest &minus; net new borrowing</li>
+            <li><strong>CF to stockholders</strong> = dividends &minus; net new equity</li>
+          </ul>
+          <p class="note">The interactive on the next slide computes every one of these and checks that the identity balances.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Interactive program &middot; Chapter 2 &middot; the heart of the homework</div>
+    <h2 class="reveal">The cash-flow calculator, live</h2>
+  </div>
+  <div class="slide-body">
+    <div class="demo reveal" style="max-height:75vh;">
+      <div class="demo-head">
+        <div class="dotrow"><i style="background:#928E85"></i><i style="background:#4F7C82"></i><i style="background:#B8924E"></i></div>
+        <span class="fname">cash_flow.js &middot; edit any figure</span>
+        <span style="margin-left:auto;display:flex;gap:.4rem;">
+          <button class="run-btn" onclick="loadCF('benson')">P7: Benson</button>
+          <button class="run-btn" onclick="loadCF('p14')" style="background:#4F7C82;">P14: full</button>
+        </span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1 1 auto;min-height:0;">
+        <div style="padding:1rem 1.1rem;background:#fff;display:flex;flex-direction:column;gap:.45rem;overflow:auto;">
+          <div id="cf-inputs"></div>
+        </div>
+        <div style="padding:1rem 1.1rem;background:var(--cream);border-left:1px solid var(--line);display:flex;flex-direction:column;gap:.5rem;overflow:auto;">
+          <div id="cf-out" style="font-family:JetBrains Mono,monospace;font-size:.82rem;line-height:1.7;color:var(--ink);"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Under the hood</div>
+    <h2 class="reveal">How the calculator works</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col" style="grid-template-columns:1.1fr .9fr;">
+      <div class="demo reveal" style="max-height:60vh;">
+        <div class="demo-head">
+          <div class="dotrow"><i style="background:#928E85"></i><i style="background:#4F7C82"></i><i style="background:#B8924E"></i></div>
+          <span class="fname">cash_flow.js</span>
+        </div>
+        <div class="code" id="cfcode"></div>
+      </div>
+      <div class="reveal">
+        <p>The whole of Chapter 2's cash-flow analysis is a handful of subtractions, applied in order:</p>
+        <ul class="clean" style="margin-top:.8rem;font-size:.95rem;">
+          <li>Build <strong>EBIT</strong>, then taxes, then <strong>OCF</strong></li>
+          <li>Compute cash flow to <strong>creditors</strong> and <strong>stockholders</strong></li>
+          <li>Their sum is cash flow from assets</li>
+        </ul>
+        <p class="note">Editing any input re-runs it instantly &mdash; and the tool confirms the two sides of the identity match.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 2 &middot; Homework Problem 7 &middot; corrected</div>
+    <h2 class="reveal">Operating cash flow, step by step</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <p>Benson, Inc.: sales $38,530, costs $12,750, depreciation $2,550, interest $1,850, tax rate 21%.</p>
+        <table class="table">
+          <tr><th>Step</th><th>Calculation</th><th>Result</th></tr>
+          <tr><td class="mono">EBIT</td><td class="mono">38,530&minus;12,750&minus;2,550</td><td class="mono">23,230</td></tr>
+          <tr><td class="mono">Taxes</td><td class="mono">(23,230&minus;1,850)&times;21%</td><td class="mono">4,489.80</td></tr>
+          <tr><td class="mono">Net income</td><td class="mono">23,230&minus;1,850&minus;4,489.8</td><td class="mono">16,890.20</td></tr>
+          <tr><td class="mono">OCF</td><td class="mono">23,230+2,550&minus;4,489.8</td><td class="mono">21,290.20</td></tr>
+        </table>
+      </div>
+      <div class="reveal">
+        <div class="card down">
+          <h3>The correction</h3>
+          <p style="font-size:.94rem;">OCF = EBIT + Depreciation &minus; Taxes = 23,230 + 2,550 &minus; 4,489.8 = <strong>$21,290.20</strong>.</p>
+          <p style="font-size:.94rem;margin-top:.5rem;">The submitted answer boxed <strong>$24,290.2</strong>, but that line's own arithmetic equals 21,290.2 &mdash; a transcription slip. A cross-check confirms it: OCF = NI + Depreciation + Interest = 16,890.2 + 2,550 + 1,850 = 21,290.2. &check;</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 2 &middot; Homework Problem 14</div>
+    <h2 class="reveal">The full cash-flow identity in action</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <p>With sales $178,000, costs $103,600, other $5,100, depreciation $12,100, interest $8,900, taxes $12,705, dividends $10,143, $2,900 new equity, $4,000 debt redeemed:</p>
+        <table class="table">
+          <tr><th>Quantity</th><th>Value</th></tr>
+          <tr><td class="mono">a) OCF</td><td class="mono">$56,595</td></tr>
+          <tr><td class="mono">b) CF to creditors</td><td class="mono">8,900 &minus; (&minus;4,000) = $12,900</td></tr>
+          <tr><td class="mono">c) CF to stockholders</td><td class="mono">10,143 &minus; 2,900 = $7,243</td></tr>
+          <tr><td class="mono">d) &Delta;NWC</td><td class="mono">$1,212</td></tr>
+        </table>
+      </div>
+      <div class="reveal">
+        <div class="card up">
+          <h3>How (d) falls out</h3>
+          <p style="font-size:.93rem;">CFA = CF to creditors + CF to stockholders = 12,900 + 7,243 = <strong>$20,143</strong>.</p>
+          <p style="font-size:.93rem;margin-top:.4rem;">NCS = depreciation + increase in fixed assets = 12,100 + 23,140 = $35,240.</p>
+          <p style="font-size:.93rem;margin-top:.4rem;">Then &Delta;NWC = OCF &minus; NCS &minus; CFA = 56,595 &minus; 35,240 &minus; 20,143 = <strong>$1,212</strong>. All correct. &check;</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 3 &middot; ratio analysis</div>
+    <h2 class="reveal">Five families of financial ratios</h2>
+  </div>
+  <div class="slide-body">
+    <div class="four-col reveal">
+      <div class="card"><h3>Liquidity</h3><p style="font-size:.9rem;">Short-term solvency &mdash; can the firm pay its bills? Current ratio, quick ratio.</p></div>
+      <div class="card"><h3>Leverage</h3><p style="font-size:.9rem;">Long-term solvency &mdash; debt management. Debt ratio, times interest earned.</p></div>
+      <div class="card"><h3>Turnover</h3><p style="font-size:.9rem;">Asset management &mdash; how efficiently assets generate sales. Inventory &amp; receivables turnover.</p></div>
+      <div class="card"><h3>Profitability</h3><p style="font-size:.9rem;">Profit margin, ROA, ROE &mdash; how much profit per dollar of sales, assets, equity.</p></div>
+    </div>
+    <div class="card accent reveal" style="margin-top:1.2rem;">
+      <h3>Why standardize first?</h3>
+      <p style="font-size:.96rem;"><strong>Common-size statements</strong> express every balance-sheet item as a percent of total assets, and every income-statement line as a percent of sales. That lets you compare firms of different sizes &mdash; and the same firm over time &mdash; on equal footing before computing ratios.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 3 &middot; the key decomposition</div>
+    <h2 class="reveal">The DuPont identity</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <p>The DuPont identity breaks <strong>ROE</strong> into three levers, showing <em>why</em> a firm earns the return it does:</p>
+        <div class="formula" style="margin:.8rem 0;font-size:.8rem;">ROE = Profit Margin &times; Total Asset Turnover &times; Equity Multiplier</div>
+        <ul class="clean" style="font-size:.94rem;">
+          <li><strong>Profit margin</strong> &mdash; operating efficiency</li>
+          <li><strong>Asset turnover</strong> &mdash; asset-use efficiency</li>
+          <li><strong>Equity multiplier</strong> &mdash; financial leverage</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <div class="card accent">
+          <h3>The building blocks</h3>
+          <div class="formula" style="margin:.3rem 0;font-size:.76rem;">ROA = Net Income / Total Assets<br>ROE = Net Income / Total Equity<br>Equity Multiplier = Total Assets / Total Equity<br>ROE = ROA &times; Equity Multiplier</div>
+          <p class="note">Two firms with the same ROE can get there very differently &mdash; one through margins, another through leverage. The analyzer on the next slide makes the trade-offs visible.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Interactive program &middot; Chapter 3</div>
+    <h2 class="reveal">The DuPont analyzer</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col" style="grid-template-columns:1.05fr .95fr;">
+      <div class="demo reveal" style="max-height:68vh;">
+        <div class="demo-head">
+          <div class="dotrow"><i style="background:#928E85"></i><i style="background:#4F7C82"></i><i style="background:#B8924E"></i></div>
+          <span class="fname">dupont.js &middot; drag the three levers</span>
+          <button class="run-btn" onclick="runDuPont()">&#9658; Compute ROE</button>
+        </div>
+        <div style="padding:1rem 1.1rem;background:#fff;display:flex;flex-direction:column;gap:.55rem;overflow:auto;">
+          <div id="dp-sliders"></div>
+        </div>
+        <div class="out" id="dp-out"><span class="muted">// ROE = Profit Margin x Asset Turnover x Equity Multiplier</span></div>
+      </div>
+      <div class="reveal">
+        <p>Adjust each lever and watch ROE respond. This is exactly the homework's <strong>Taylor Company</strong> problem (Exercise 13), worked in reverse:</p>
+        <div class="formula" style="margin:.6rem 0;font-size:.78rem;">ROA = PM &times; Turnover &rArr; Turnover = ROA / PM<br>EM = ROE / ROA</div>
+        <p style="font-size:.94rem;">With ROA 7.6%, PM 5.2%, ROE 14%: turnover = <strong>1.46</strong>, equity multiplier = <strong>1.84</strong>. &check;</p>
+        <p class="note">Notice: raising the equity multiplier lifts ROE &mdash; but that's leverage, which also raises risk.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 3 &middot; Homework Exercises 17, 19, 25 &middot; corrected</div>
+    <h2 class="reveal">ROA, ROE, and profit margin</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <table class="table">
+          <tr><th>Exercise</th><th>Asked</th><th>Answer</th></tr>
+          <tr><td class="mono">Ex17 Bethesda</td><td class="mono">ROA</td><td class="mono">7.93%</td></tr>
+          <tr><td class="mono">Ex19 Borland</td><td class="mono">ROA</td><td class="mono">7.78%</td></tr>
+          <tr><td class="mono">Ex25 PXG</td><td class="mono">profit margin</td><td class="mono">5.54%</td></tr>
+        </table>
+        <p style="font-size:.93rem;margin-top:.6rem;">Ex19: Net income = 5.6% &times; $13.6M = $0.762M, so ROA = 0.762 / 9.8 = <strong>7.78%</strong>. Ex25: PM = ROA / turnover = 8.3% / 1.5 = <strong>5.54%</strong>.</p>
+      </div>
+      <div class="reveal">
+        <div class="card down">
+          <h3>The ROE correction (Ex17)</h3>
+          <p style="font-size:.94rem;">Bethesda's <strong>ROA</strong> = 86,432 / 1,090,520 = <strong>7.93%</strong> &mdash; correct.</p>
+          <p style="font-size:.94rem;margin-top:.5rem;">But the submitted <strong>ROE of 79.26%</strong> divided net income by <em>total assets</em> again (and slipped a decimal). ROE needs <strong>total equity</strong>:</p>
+          <div class="formula" style="margin:.4rem 0;font-size:.76rem;">ROE = Net Income / Total <strong>Equity</strong></div>
+          <p style="font-size:.93rem;">Since equity isn't given in the problem, ROE can't be computed from these numbers alone &mdash; and it is <em>not</em> equal to ROA. The figure needs the equity value to be correct.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 3 &middot; how fast can a firm grow?</div>
+    <h2 class="reveal">Internal &amp; sustainable growth</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <div class="card accent">
+          <h3>Internal growth rate</h3>
+          <p style="font-size:.94rem;">The most a firm can grow using <strong>only retained earnings</strong> &mdash; no outside financing at all.</p>
+          <div class="formula" style="margin:.5rem 0;font-size:.78rem;">IGR = (ROA &times; b) / (1 &minus; ROA &times; b)</div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="card accent">
+          <h3>Sustainable growth rate</h3>
+          <p style="font-size:.94rem;">The most a firm can grow using retained earnings <strong>plus debt</strong>, while keeping a constant debt ratio.</p>
+          <div class="formula" style="margin:.5rem 0;font-size:.78rem;">SGR = (ROE &times; b) / (1 &minus; ROE &times; b)</div>
+        </div>
+      </div>
+    </div>
+    <div class="quote reveal" style="margin-top:1.1rem;">In both, <strong>b</strong> is the plowback (retention) ratio = 1 &minus; payout ratio. Homework: Levine's IGR = <strong>6.21%</strong> (ROA 7.8%, payout 25%); Crash Davis's SGR = <strong>13.22%</strong> (ROE 14.6%, payout 20%). Both verified. &check;</div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Interactive program &middot; Chapter 3</div>
+    <h2 class="reveal">The growth-rate calculator</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col" style="grid-template-columns:1.05fr .95fr;">
+      <div class="demo reveal" style="max-height:66vh;">
+        <div class="demo-head">
+          <div class="dotrow"><i style="background:#928E85"></i><i style="background:#4F7C82"></i><i style="background:#B8924E"></i></div>
+          <span class="fname">growth.js</span>
+          <button class="run-btn" onclick="runGrowth()">&#9658; Compute</button>
+        </div>
+        <div style="padding:1rem 1.1rem;background:#fff;display:flex;flex-direction:column;gap:.55rem;overflow:auto;">
+          <div id="gr-sliders"></div>
+        </div>
+        <div class="out" id="gr-out"><span class="muted">// internal uses ROA; sustainable uses ROE</span></div>
+      </div>
+      <div class="reveal">
+        <p>Set the return and the payout ratio and compare the two growth ceilings. Two patterns emerge:</p>
+        <ul class="clean" style="margin-top:.6rem;font-size:.94rem;">
+          <li><strong>Lower payout</strong> (higher retention) &rarr; faster growth, since more profit is reinvested</li>
+          <li><strong>SGR &gt; IGR</strong> always, because debt financing extends what retained earnings alone can do</li>
+        </ul>
+        <p class="note">Slide the payout to 0 and growth peaks; slide it to 100% and the firm can't grow internally at all.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Chapter 3 &middot; Homework Exercise 29</div>
+    <h2 class="reveal">Reading a misleading claim</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="reveal">
+        <p>A grocery chain advertises: "Send your child with $2 to buy $50 of groceries, and your child makes <em>twice</em> the profit margin we do." Using its statements (sales $685M, net income $13.70M, assets $365M, debt $229.80M):</p>
+        <table class="table">
+          <tr><th>Measure</th><th>Value</th></tr>
+          <tr><td class="mono">Store profit margin</td><td class="mono">13.70/685 = 2%</td></tr>
+          <tr><td class="mono">"Child" margin</td><td class="mono">2/50 = 4%</td></tr>
+          <tr><td class="mono">Total equity</td><td class="mono">365 &minus; 229.80 = 135.2</td></tr>
+          <tr><td class="mono">Store ROE</td><td class="mono">13.70/135.2 = 10.13%</td></tr>
+        </table>
+      </div>
+      <div class="reveal">
+        <div class="card gold">
+          <h3>Why the claim misleads</h3>
+          <p style="font-size:.94rem;">The comparison is <strong>profit margin on a single transaction</strong> vs. the firm's <em>overall</em> margin &mdash; ignoring that the store turns its assets over many times a year and earns a healthy <strong>10.13% ROE</strong>.</p>
+          <p style="font-size:.94rem;margin-top:.5rem;">A high margin on one sale isn't the same as a high return on the business. This is exactly why DuPont separates margin from turnover and leverage. All figures verified. &check;</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">The thread through all three chapters</div>
+    <h2 class="reveal">From goal to statements to diagnosis</h2>
+  </div>
+  <div class="slide-body">
+    <div class="reveal">
+      <p class="lead">The first three chapters form one logical chain &mdash; each builds on the last to answer the question "how is the firm really doing?"</p>
+    </div>
+    <div class="three-col reveal" style="margin-top:1.2rem;">
+      <div class="card accent"><h3>Chapter 1 &mdash; the goal</h3><p style="font-size:.93rem;">Maximize shareholder value, manage the agency problem, and make the three core decisions.</p></div>
+      <div class="card accent"><h3>Chapter 2 &mdash; the record</h3><p style="font-size:.93rem;">Financial statements and cash flow show where money came from and went &mdash; and cash, not accounting profit, is what counts.</p></div>
+      <div class="card accent"><h3>Chapter 3 &mdash; the diagnosis</h3><p style="font-size:.93rem;">Ratios, DuPont, and growth rates turn those statements into insight about efficiency, leverage, and how fast the firm can grow.</p></div>
+    </div>
+    <div class="quote reveal" style="margin-top:1.3rem;">Cash flow is the connective tissue: it links the value-maximizing goal of Chapter 1 to the statements of Chapter 2 and the performance diagnosis of Chapter 3.</div>
+  </div>
+</section>
+
+
+<section class="slide">
+  <div class="slide-head">
+    <div class="eyebrow reveal">Homework 1 at a glance</div>
+    <h2 class="reveal">What the assignment covered</h2>
+  </div>
+  <div class="slide-body">
+    <div class="reveal" style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem 2.2rem;">
+      <div><p><strong>Chapter 1.</strong> The agency problem (Ex 1.12) &mdash; a manager acting for shareholders pushes for a better bid than a low buyout offer.</p></div>
+      <div><p><strong>Chapter 2 taxes.</strong> Duela Dent's $189,000 income &rarr; $42,169.50 tax, 32% marginal, 22.31% average.</p></div>
+      <div><p><strong>Chapter 2 cash flow.</strong> Benson's OCF = $21,290.20 (corrected); the full identity for Problem 14 balances at CFA = $20,143.</p></div>
+      <div><p><strong>Chapter 3 growth.</strong> Internal growth 6.21%, sustainable growth 13.22% &mdash; retention drives both.</p></div>
+      <div><p><strong>Chapter 3 DuPont &amp; ratios.</strong> Asset turnover 1.46, equity multiplier 1.84; ROA, profit margin, and the misleading grocery-chain claim unpacked.</p></div>
+      <div><p><strong>Three programs.</strong> The cash-flow calculator, the DuPont analyzer, and the growth-rate calculator let anyone run the homework's core math, live.</p></div>
+    </div>
+    <div class="quote reveal" style="margin-top:1.3rem;">Managerial finance begins here: a clear goal, honest cash-flow accounting, and the ratios that reveal what the statements are really saying.</div>
+  </div>
+</section>
+
+</div><!-- /deck -->
+<footer>
+  <span class="counter" id="counter">01 / 20</span>
+  <div class="progress"><i id="bar"></i></div>
+  <div class="dots" id="dots"></div>
+</footer>
+<button class="arrow prev" id="prev" aria-label="Previous">&#8249;</button>
+<button class="arrow next" id="next" aria-label="Next">&#8250;</button>
+
+<script>
+/* ---------------- syntax highlighter (display only) ---------------- */
+function hl(code){
+  code=code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return code.split('\n').map(line=>{
+    if(/^\s*\/\//.test(line))return '<span class="c">'+line+'</span>';
+    let out='',i=0;
+    while(i<line.length){
+      const rest=line.slice(i);let m;
+      if(m=rest.match(/^\/\/.*/)){out+='<span class="c">'+m[0]+'</span>';break;}
+      if(m=rest.match(/^'[^']*'/)){out+='<span class="s">'+m[0]+'</span>';i+=m[0].length;continue;}
+      if(m=rest.match(/^`[^`]*`/)){out+='<span class="s">'+m[0]+'</span>';i+=m[0].length;continue;}
+      if(m=rest.match(/^"[^"]*"/)){out+='<span class="s">'+m[0]+'</span>';i+=m[0].length;continue;}
+      if(m=rest.match(/^\b(function|const|let|var|for|while|if|else|return|new|of|in|Math)\b/)){out+='<span class="k">'+m[0]+'</span>';i+=m[0].length;continue;}
+      if(m=rest.match(/^\b\d+(\.\d+)?\b/)){out+='<span class="n">'+m[0]+'</span>';i+=m[0].length;continue;}
+      if(m=rest.match(/^[a-zA-Z_]\w*(?=\s*\()/)){out+='<span class="f">'+m[0]+'</span>';i+=m[0].length;continue;}
+      out+=line[i];i++;
+    }
+    return out;
+  }).join('\n');
+}
+function setCode(id,src){const el=document.getElementById(id);if(el)el.innerHTML=hl(src.trim());}
+
+/* ============== PROGRAM 1: CASH-FLOW CALCULATOR ============== */
+// Two modes: simple OCF (Benson) and full identity (P14).
+let CFmode='benson';
+const CF_PRESETS={
+  benson:{sales:38530,costs:12750,dep:2550,interest:1850,trate:21,full:false},
+  p14:{sales:178000,costs:103600,other:5100,dep:12100,interest:8900,taxes:12705,div:10143,newEq:2900,netBorrow:-4000,incFA:23140,full:true},
+};
+let CF=Object.assign({},CF_PRESETS.benson);
+function fieldNum(id,label,val){
+  return `<label style="display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:#2B2925;">
+    <span style="flex:1;">${label}</span>
+    <input id="${id}" value="${val}" inputmode="decimal" style="flex:0 0 100px;font-family:JetBrains Mono,monospace;font-size:.8rem;border:1px solid var(--line);border-radius:6px;padding:.22rem .4rem;text-align:right;"></label>`;
+}
+function buildCF(){
+  const host=document.getElementById('cf-inputs'); if(!host)return;
+  let h='';
+  if(!CF.full){
+    h+='<div style="font-family:JetBrains Mono,monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone-deep);margin-bottom:.2rem;">Operating cash flow (Problem 7)</div>';
+    h+=fieldNum('cfSales','Sales',CF.sales)+fieldNum('cfCosts','Costs',CF.costs)+fieldNum('cfDep','Depreciation',CF.dep)+fieldNum('cfInt','Interest',CF.interest)+fieldNum('cfTax','Tax rate %',CF.trate);
+  } else {
+    h+='<div style="font-family:JetBrains Mono,monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--stone-deep);margin-bottom:.2rem;">Full identity (Problem 14)</div>';
+    h+=fieldNum('cfSales','Sales',CF.sales)+fieldNum('cfCosts','Costs',CF.costs)+fieldNum('cfOther','Other expenses',CF.other)+fieldNum('cfDep','Depreciation',CF.dep)+fieldNum('cfInt','Interest',CF.interest)+fieldNum('cfTaxAmt','Taxes ($)',CF.taxes)+fieldNum('cfDiv','Dividends',CF.div)+fieldNum('cfEq','Net new equity',CF.newEq)+fieldNum('cfBor','Net new borrowing',CF.netBorrow)+fieldNum('cfFA','Increase in fixed assets',CF.incFA);
+  }
+  host.innerHTML=h;
+  host.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',readCF));
+}
+function readCF(){
+  const n=id=>{const e=document.getElementById(id);return e?parseFloat(e.value):NaN;};
+  if(!CF.full){
+    CF.sales=n('cfSales');CF.costs=n('cfCosts');CF.dep=n('cfDep');CF.interest=n('cfInt');CF.trate=n('cfTax');
+  } else {
+    CF.sales=n('cfSales');CF.costs=n('cfCosts');CF.other=n('cfOther');CF.dep=n('cfDep');CF.interest=n('cfInt');CF.taxes=n('cfTaxAmt');CF.div=n('cfDiv');CF.newEq=n('cfEq');CF.netBorrow=n('cfBor');CF.incFA=n('cfFA');
+  }
+  computeCF();
+}
+const CF_SRC=`// Chapter 2 cash flow, from the income statement down
+function operatingCashFlow(sales, costs, dep, interest, taxRate){
+  const ebit  = sales - costs - dep;
+  const taxes = (ebit - interest) * taxRate;
+  const ni    = ebit - interest - taxes;
+  return { ebit, taxes, ni, ocf: ebit + dep - taxes };
+}
+// the identity: what assets produce = what investors receive
+function cashFlowIdentity(ocf, ncs, dNWC, interest, netBorrow, div, netEquity){
+  const cfAssets       = ocf - ncs - dNWC;
+  const cfToCreditors  = interest - netBorrow;
+  const cfToStockholders = div - netEquity;
+  return { cfAssets, cfToCreditors, cfToStockholders };
+}`;
+function fmt(v){return (v<0?'-$':'$')+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2});}
+function computeCF(){
+  const out=document.getElementById('cf-out'); if(!out)return;
+  const ebit=CF.sales-CF.costs-CF.dep-(CF.full?CF.other:0);
+  if(!CF.full){
+    const taxes=(ebit-CF.interest)*(CF.trate/100);
+    const ni=ebit-CF.interest-taxes;
+    const ocf=ebit+CF.dep-taxes;
+    out.innerHTML=
+      `EBIT = ${fmt(ebit)}\n`+
+      `Taxes = (${fmt(ebit)} - ${fmt(CF.interest)}) x ${CF.trate}% = <span class="hl">${fmt(taxes)}</span>\n`+
+      `Net income = <span class="hl">${fmt(ni)}</span>\n`+
+      `\nOCF = EBIT + Dep - Taxes\n    = ${fmt(ebit)} + ${fmt(CF.dep)} - ${fmt(taxes)}\n    = <span class="ok">${fmt(ocf)}</span>\n`+
+      `<span class="muted">cross-check: NI + Dep + Interest = ${fmt(ni+CF.dep+CF.interest)}</span>`;
+  } else {
+    const ocf=ebit+CF.dep-CF.taxes;
+    const ncs=CF.dep+CF.incFA;
+    const cfCred=CF.interest-CF.netBorrow;
+    const cfStock=CF.div-CF.newEq;
+    const cfa=cfCred+cfStock;
+    const dNWC=ocf-ncs-cfa;
+    out.innerHTML=
+      `EBIT = ${fmt(ebit)}\n`+
+      `OCF = EBIT + Dep - Taxes = <span class="ok">${fmt(ocf)}</span>\n`+
+      `NCS = Dep + ΔFixed assets = ${fmt(ncs)}\n`+
+      `\nCF to creditors = Int - net borrow = ${fmt(cfCred)}\n`+
+      `CF to stockholders = Div - net equity = ${fmt(cfStock)}\n`+
+      `CF from assets = <span class="hl">${fmt(cfa)}</span>\n`+
+      `\nΔNWC = OCF - NCS - CFA = <span class="ok">${fmt(dNWC)}</span>\n`+
+      `<span class="muted">identity holds: creditors + stockholders = ${fmt(cfa)}</span>`;
+  }
+}
+function loadCF(which){
+  CF=Object.assign({},CF_PRESETS[which]); CFmode=which;
+  buildCF(); computeCF();
+}
+
+/* ============== PROGRAM 2: DUPONT ANALYZER ============== */
+function slider(id,label,min,max,val,step,suffix){
+  const dec=step<1?(step<0.1?2:1):0;
+  return `<label style="display:flex;align-items:center;gap:.55rem;font-size:.8rem;color:#2B2925;">
+    <span style="flex:0 0 130px;">${label}</span>
+    <input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}" style="flex:1;accent-color:#4F7C82;"
+      oninput="document.getElementById('${id}v').textContent=(+this.value).toFixed(${dec})+'${suffix||''}'">
+    <b id="${id}v" style="flex:0 0 52px;text-align:right;font-family:JetBrains Mono,monospace;color:#356065;">${(+val).toFixed(dec)}${suffix||''}</b>
+  </label>`;
+}
+function buildDP(){
+  const host=document.getElementById('dp-sliders'); if(!host||host.dataset.done)return;
+  host.innerHTML=[
+    slider('dpPM','Profit margin',1,15,5.2,0.1,'%'),
+    slider('dpTAT','Asset turnover',0.2,3,1.46,0.01,'x'),
+    slider('dpEM','Equity multiplier',1,4,1.84,0.01,'x'),
+  ].join(''); host.dataset.done=1;
+  host.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',runDuPont));
+}
+const DP_SRC=`// The DuPont identity decomposes ROE into three drivers
+function dupontROE(profitMargin, assetTurnover, equityMultiplier){
+  return profitMargin * assetTurnover * equityMultiplier;
+}
+// ROA is the first two pieces; leverage turns ROA into ROE
+const roa = profitMargin * assetTurnover;
+const roe = roa * equityMultiplier;`;
+function runDuPont(){
+  buildDP();
+  const g=id=>+document.getElementById(id).value;
+  const pm=g('dpPM')/100, tat=g('dpTAT'), em=g('dpEM');
+  const roa=pm*tat, roe=roa*em;
+  document.getElementById('dp-out').innerHTML=
+    `ROA = PM x Turnover = ${(pm*100).toFixed(2)}% x ${tat.toFixed(2)} = <span class="hl">${(roa*100).toFixed(2)}%</span>\n`+
+    `ROE = ROA x Equity Multiplier = ${(roa*100).toFixed(2)}% x ${em.toFixed(2)} = <span class="ok">${(roe*100).toFixed(2)}%</span>\n`+
+    `<span class="muted">${em>2.5?'high leverage is lifting ROE — but raising risk':'leverage modest; ROE driven mainly by operations'}</span>`;
+}
+
+/* ============== PROGRAM 3: GROWTH-RATE CALCULATOR ============== */
+function buildGR(){
+  const host=document.getElementById('gr-sliders'); if(!host||host.dataset.done)return;
+  host.innerHTML=[
+    slider('grROA','ROA',1,20,7.8,0.1,'%'),
+    slider('grROE','ROE',1,30,14.6,0.1,'%'),
+    slider('grPayout','Payout ratio',0,100,25,1,'%'),
+  ].join(''); host.dataset.done=1;
+  host.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',runGrowth));
+}
+const GR_SRC=`// Internal growth: retained earnings only
+function internalGrowth(roa, b){      // b = plowback = 1 - payout
+  return (roa * b) / (1 - roa * b);
+}
+// Sustainable growth: retained earnings + debt, constant debt ratio
+function sustainableGrowth(roe, b){
+  return (roe * b) / (1 - roe * b);
+}`;
+function runGrowth(){
+  buildGR();
+  const g=id=>+document.getElementById(id).value;
+  const roa=g('grROA')/100, roe=g('grROE')/100, b=1-g('grPayout')/100;
+  const igr=(roa*b)/(1-roa*b)*100;
+  const sgr=(roe*b)/(1-roe*b)*100;
+  document.getElementById('gr-out').innerHTML=
+    `plowback b = 1 - ${g('grPayout')}% = ${b.toFixed(2)}\n`+
+    `Internal growth  = (ROA x b)/(1 - ROA x b) = <span class="hl">${igr.toFixed(3)}%</span>\n`+
+    `Sustainable growth = (ROE x b)/(1 - ROE x b) = <span class="ok">${sgr.toFixed(3)}%</span>\n`+
+    `<span class="muted">${b===0?'100% payout — no internal growth possible':'SGR exceeds IGR because debt extends retained earnings'}</span>`;
+}
+
+/* ====================== NAVIGATION ENGINE ====================== */
+setCode('cfcode', CF_SRC);
+const deck=document.getElementById('deck');
+const allSlides=Array.from(document.querySelectorAll('.slide'));
+const total=allSlides.length;
+let idx=0;
+const dotsWrap=document.getElementById('dots');
+allSlides.forEach((_,i)=>{const b=document.createElement('button');b.className='dot'+(i===0?' on':'');b.setAttribute('aria-label','Slide '+(i+1));b.onclick=()=>go(i);dotsWrap.appendChild(b);});
+const dots=Array.from(document.querySelectorAll('.dot'));
+const bar=document.getElementById('bar'),counter=document.getElementById('counter');
+const prevBtn=document.getElementById('prev'),nextBtn=document.getElementById('next');
+const inited={};
+function go(n){
+  idx=Math.max(0,Math.min(total-1,n));
+  allSlides.forEach((s,i)=>s.classList.toggle('active',i===idx));
+  dots.forEach((d,i)=>d.classList.toggle('on',i===idx));
+  bar.style.width=((idx+1)/total*100)+'%';
+  counter.textContent=String(idx+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+  prevBtn.disabled=idx===0;nextBtn.disabled=idx===total-1;
+  const active=allSlides[idx];
+  if(!inited[idx]){
+    if(active.querySelector('#cf-inputs')){buildCF();computeCF();}
+    if(active.querySelector('#dp-sliders')){buildDP();runDuPont();}
+    if(active.querySelector('#gr-sliders')){buildGR();runGrowth();}
+    inited[idx]=1;
+  }
+}
+prevBtn.onclick=()=>go(idx-1);nextBtn.onclick=()=>go(idx+1);
+document.addEventListener('keydown',e=>{
+  const t=e.target, onCtl = t && (t.tagName==='INPUT'||t.tagName==='SELECT'||t.tagName==='TEXTAREA'||t.tagName==='BUTTON');
+  if(onCtl) return;
+  if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();go(idx+1);}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(idx-1);}
+  else if(e.key==='Home')go(0); else if(e.key==='End')go(total-1);
+  else if(e.key===' '){e.preventDefault();go(idx+1);}
+});
+let tx=0,ty=0,swipeOK=true;
+function onControl(t){return t && t.closest && t.closest('input,button,select,textarea,a,canvas,.demo-head');}
+deck.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;swipeOK=!onControl(e.target);},{passive:true});
+deck.addEventListener('touchend',e=>{
+  if(!swipeOK)return;
+  const dx=e.changedTouches[0].clientX-tx, dy=e.changedTouches[0].clientY-ty;
+  if(Math.abs(dx)>70 && Math.abs(dx)>Math.abs(dy)*1.8) go(idx+(dx<0?1:-1));
+},{passive:true});
+go(0);
+</script>
+</body>
+</html>
